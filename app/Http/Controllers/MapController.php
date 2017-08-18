@@ -48,22 +48,26 @@ class MapController extends Controller
 				
 				$outputpath = public_path('tmpfiles');
 				$rand = rand();
-				$queryhash = base64_encode(http_build_query($request->all()) );
-// 				dd($queryhash);
+				$params = $request->all();
+				ksort($params);
+				$queryhash = base64_encode(http_build_query($params));
 				$ogfilename = $request->has('download_filename') ? $request->input('download_filename') . ".$ext" : "$rand.$ext";
 				$filename = "$outputpath/$ogfilename";
+				
 				if(file_exists($filename)) unlink($filename);
 				if(file_exists($filename . ".svg")) unlink($filename . ".svg");
 				if($ext == 'jpg'){
-					
+// 					dd($shellexecurl);
 					$jpgres = config('app.jpg_sizes')[$jpg_size];
 					shell_exec("convert -density $jpgres '$shellexecurl' '$filename'");
+// 					dd("convert -density $jpgres '$shellexecurl' '$filename'");
 				}
 				else if($ext == 'pdf'){
 					shell_exec("wget -O '$filename.svg' '$shellexecurl'");
 					shell_exec("rsvg-convert -f pdf -o '$filename' '$filename.svg'");
 				}
-				return response(file_get_contents($filename))
+				$f = @file_get_contents($filename);
+				return response($f ?: null)
 					->header('Content-Type', $mime)
 					->header('Cache-Control', 'max-age=' . 30 * 24 * 60 * 60);
 			}

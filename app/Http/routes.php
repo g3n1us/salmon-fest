@@ -72,6 +72,16 @@ Route::get('slideshow', function(){
     return view('slideshow', $data);	
 });
 
+Route::get('guest_login', function(){
+	$tokens = explode(',', env('guest_tokens', ''));
+	$token = Request::input('token');
+	if(!in_array($token, $tokens)) abort(500);
+	else{
+		$user = \App\User::find(999);
+		Auth::loginUsingId(999);
+		return redirect('/');
+	}
+});
 
 
 Route::get('admin/map/{id?}', 'MapController@getMap');

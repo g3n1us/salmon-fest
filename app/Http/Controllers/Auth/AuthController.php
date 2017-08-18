@@ -59,9 +59,7 @@ class AuthController extends Controller
 	    
 // 	    This is turned off!!!
 	    
-	    //return redirect()->back()->with('error', 'Registration is disabled');
 	    die('<script>window.location.assign("/")</script>');
-// 	    return false;
 	    
 	    
         return User::create([
